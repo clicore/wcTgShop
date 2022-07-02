@@ -30,7 +30,7 @@ async def makeOrder(query: CallbackQuery, state=FSMContext):
             await query.message.answer(f"Итоговая сумма заказа ${proxy['payment']['amount']}\n\n"
                                        "🔸 Убедитесь что всё верно, в ином случае вы можете вернуться обратно в магазин!\n"
                                        "🔸 При оформлении заказа требуется вводить настоящие данные, в противном случае заказ будет отменён!\n\n"
-                                       "Теперь введите ваше полное имя?",
+                                       "Теперь введите ваше имя.",
                                        reply_markup=back_keyboard.back_button)
             await States.next()
         else:
@@ -51,37 +51,37 @@ async def getName(message: Message, state=FSMContext):
         async with state.proxy() as proxy:
             proxy["order"]["billing"]["first_name"] = message.text
             proxy["order"]["shipping"]["first_name"] = message.text
-        await message.answer("Введите вашу фамилию?", reply_markup=back_keyboard.cancel_order)
+        await message.answer("Введите вашу фамилию.", reply_markup=back_keyboard.cancel_order)
 
 @dp.message_handler(state=States.GetLastName)
 async def getLastName(message: Message, state=FSMContext):
     if message.text == "Назад":
         await States.previous()
-        await message.answer("Введите ваше полное имя?", reply_markup=back_keyboard.back_button)
+        await message.answer("Введите ваше имя.", reply_markup=back_keyboard.back_button)
     else:
         await States.next()
         async with state.proxy() as proxy:
             proxy["order"]["billing"]["last_name"] = message.text
             proxy["order"]["shipping"]["last_name"] = message.text
-        await message.answer("Нам потребуется ваш номер телефона, желаете отправить номер телефона?", reply_markup=getphone_keyboard.keyboard)
+        await message.answer("Введите номер телефона.", reply_markup=getphone_keyboard.keyboard)
 
 
 @dp.message_handler(content_types="contact", state=States.GetPhone)
 async def getPhone(message: Message, state=FSMContext):
     if message.text == "Назад":
         await States.previous()
-        await message.answer("Введите вашу фамилию?", reply_markup=back_keyboard.cancel_order)
+        await message.answer("Введите вашу фамилию.", reply_markup=back_keyboard.cancel_order)
     else:
         await States.next()
         async with state.proxy() as proxy:
             proxy["order"]["billing"]["phone"] = message.contact.phone_number
-        await message.answer("Выберите способ оплаты?", reply_markup=payment_keyboard.keyboard)
+        await message.answer("Выберите способ оплаты.", reply_markup=payment_keyboard.keyboard)
 
 @dp.message_handler(state=States.PaymentChoice)
 async def paymentChoice(message: Message, state=FSMContext):
     if message.text == "Назад":
         await States.previous()
-        await message.answer("Введите ваш номер телефона?", reply_markup=back_keyboard.cancel_order)
+        await message.answer("Введите номер телефона.", reply_markup=back_keyboard.cancel_order)
     else:
         async with state.proxy() as proxy:
             if message.text == "Приват24":
@@ -92,7 +92,7 @@ async def paymentChoice(message: Message, state=FSMContext):
                     "version": "3",
                     "amount": proxy["payment"]["amount"],
                     "currency": "USD",
-                    "order_id": str(random.randint(10000000, 99999999)),
+                    "order_id": str(random.randint(10000000, 99999999)), # temporarily
                     "phone": proxy["order"]["billing"]["phone"],
                     "description": str(order["id"]),
                     "server_url": config.SERVER_URL.replace("https", "http") + "/callback"
@@ -123,30 +123,30 @@ async def paymentChoice(message: Message, state=FSMContext):
 async def getCard(message: Message, state=FSMContext):
     if message.text == "Назад":
         await States.previous()
-        await message.answer("Выберите способ оплаты?", reply_markup=payment_keyboard.keyboard)
+        await message.answer("Выберите способ оплаты.", reply_markup=payment_keyboard.keyboard)
     else:
         await States.next()
         async with state.proxy() as proxy:
             proxy["payment"]["card"] = message.text
-        await message.answer("Введите срок действия вашей карты в таком же формате, как написано на карте бех пробелов(например 09/22)?")
+        await message.answer("Введите срок действия вашей карты в таком же формате, как написано на карте бех пробелов(например 09/22).")
 
 @dp.message_handler(state=States.GetCardDate)
 async def getCardMonth(message: Message, state=FSMContext):
     if message.text == "Назад":
         await States.previous()
-        await message.answer("Введите номер вашей карты?", reply_markup=back_keyboard.cancel_order)
+        await message.answer("Введите номер вашей карты.", reply_markup=back_keyboard.cancel_order)
     else:
         await States.next()
         async with state.proxy() as proxy:
             proxy["payment"]["card_exp_month"] = message.text[0:2]
             proxy["payment"]["card_exp_year"] = message.text[3:len(message.text)]
-        await message.answer("Введите CVV код карты?")
+        await message.answer("Введите CVV код карты.")
 
 @dp.message_handler(state=States.GetCVV)
 async def getCardCVV(message: Message, state=FSMContext):
     if message.text == "Назад":
         await States.previous()
-        await message.answer("Введите срок действия вашей карты в таком же формате, как написано на карте бех пробелов(например 09/22)?")
+        await message.answer("Введите срок действия вашей карты в таком же формате, как написано на карте бех пробелов(например 09/22).")
     else:
         async with state.proxy() as proxy:
             proxy["payment"]["card_cvv"] = message.text
@@ -158,7 +158,7 @@ async def getCardCVV(message: Message, state=FSMContext):
                 "amount": proxy["payment"]["amount"],
                 "currency": "USD",
                 "description": str(order["id"]),
-                "order_id": str(random.randint(10000000, 99999999)),
+                "order_id": str(random.randint(10000000, 99999999)), # temporarily
                 "card": proxy["payment"]["card"],
                 "card_exp_month": proxy["payment"]["card_exp_month"],
                 "card_exp_year": proxy["payment"]["card_exp_year"],

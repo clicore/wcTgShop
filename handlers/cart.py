@@ -5,6 +5,7 @@ from loader import dp, bot, wcapi
 from aiogram.dispatcher import filters, FSMContext
 from misc import removeHTML
 from states import States
+from aiogram.types.input_file import InputFile
 
 @dp.message_handler(filters.Text("Корзина"), state='*')
 async def showCart(message: Message, state=FSMContext):
@@ -14,7 +15,7 @@ async def showCart(message: Message, state=FSMContext):
         if data["order"]["line_items"]:
             for i, item in enumerate(data["order"]["line_items"]):
                 product = wcapi.get(f"products/{item['product_id']}").json()
-                await bot.send_photo(message.from_user.id, product['images'][0]['src'],
+                await bot.send_photo(message.from_user.id, InputFile.from_url(product['images'][0]['src']),
                                      caption=f"<b><a href='{product['permalink']}'>{product['name']}</a></b>\n\n"
                                              f"{removeHTML(product['description'])}\n"
                                              f"Цена: {product['price']}$\n"

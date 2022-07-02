@@ -6,6 +6,7 @@ from aiogram import filters
 from misc import removeHTML
 from states import States
 from keyboards.inline import navigate_keyboard
+from aiogram.types.input_file import InputFile
 
 @dp.message_handler(filters.Text("Магазин"), state='*')
 async def showProducts(message: Message, state=FSMContext):
@@ -22,7 +23,7 @@ async def showProducts(message: Message, state=FSMContext):
                 await  bot.delete_message(message.from_user.id, msg)
             proxy["shop"]["message"] = []
         for product in products:
-            msg = await bot.send_photo(message.from_user.id, product['images'][0]['src'],
+            msg = await bot.send_photo(message.from_user.id, InputFile.from_url(product['images'][0]['src']),
                                         caption=f"<b><a href='{product['permalink']}'>{product['name']}</a></b>\n\n"
                                                 f"{removeHTML(product['description'])}\n"
                                                 f"Цена: {product['price']}$",
@@ -45,7 +46,7 @@ async def nextPage(query: CallbackQuery, state: FSMContext):
                     await  bot.delete_message(query.from_user.id, msg)
                 proxy["shop"]["message"] = []
             for product in products:
-                msg = await bot.send_photo(query.from_user.id, product['images'][0]['src'],
+                msg = await bot.send_photo(query.from_user.id, InputFile.from_url(product['images'][0]['src']),
                                            caption=f"<b><a href='{product['permalink']}'>{product['name']}</a></b>\n\n"
                                                    f"{removeHTML(product['description'])}\n"
                                                    f"Цена: {product['price']}$",
@@ -76,7 +77,7 @@ async def prevPage(query: CallbackQuery, state: FSMContext):
                     await  bot.delete_message(query.from_user.id, msg)
                 proxy["shop"]["message"] = []
             for product in products:
-                msg = await bot.send_photo(query.from_user.id, product['images'][0]['src'],
+                msg = await bot.send_photo(query.from_user.id, InputFile.from_url(product['images'][0]['src']),
                                            caption=f"<b><a href='{product['permalink']}'>{product['name']}</a></b>\n\n"
                                                    f"{removeHTML(product['description'])}\n"
                                                    f"Цена: {product['price']}$",
