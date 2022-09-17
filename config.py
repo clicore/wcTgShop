@@ -1,7 +1,7 @@
 SERVER_URL = "http://localhost:8080"
 
 #Telegram bot API token
-BOT_TOKEN = "1754421676:AAE-Ll-qTgPAtdcla0UOVtCQIRe2dVz67pE"  # it's not a pity
+BOT_TOKEN = "1754421676:AAE-Ll-qTgPAtdcla0UOVtCQIRe2dVz67pE"  # dev token, it's not a pity
 
 #API
 API_URL = "http://46.119.217.188:8080"
